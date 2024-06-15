@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora x2.5 - 38%</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+            appearance: textfield; /* Chrome, Safari, Edge, Opera */
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        label {
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #1162db; /* Azul */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.1s ease;
+        }
+        button:hover {
+            background-color: #0e4da8;
+        }
+        button:active {
+            background-color: #0c3d86;
+            box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+        .resultado {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        .copy-code {
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #1162db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            transition: background-color 0.3s ease, box-shadow 0.1s ease;
+        }
+        .copy-code:hover {
+            background-color: #0e4da8;
+        }
+        .copy-code:active {
+            background-color: #0c3d86;
+            box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+        .copy-code.clicked {
+            background-color: #f90003; /* Tom de vermelho */
+        }
+        .nota {
+            font-size: 18px;
+            color: #0e4da8; /* Azul */
+            text-align: left;
+            margin-top: 10px;
+        }
+        /* Espaçamento entre input opcional e botão */
+        .input-container.margin-bottom {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora X2.5 -38%</h1>
+        <div class="input-container">
+            <input type="number" id="numero" placeholder="Valor Rotulado" step="0.001" oninput="calcularValores()">
+        </div>
+        <div class="input-container margin-bottom">
+            <input type="number" id="quantidade" placeholder="Quantidade por caixa (opcional)" oninput="atualizarQuantidade()" step="1" min="0">
+        </div>
+        <div class="resultado" id="resultadoUnitario"></div>
+        <button class="copy-code" onclick="copyCode('resultadoUnitario')">Copiar Valor Unitário</button>
+        <div class="resultado" id="resultadoCaixaFechada"></div>
+        <button class="copy-code" onclick="copyCode('resultadoCaixaFechada')">Copiar Valor da Caixa</button>
+    </div>
+
+    <script>
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function calcularValores() {
+            const numero = parseFloat(document.getElementById("numero").value);
+            if (isNaN(numero)) {
+                document.getElementById("resultadoUnitario").textContent = "Por favor, insira um número válido.";
+                return;
+            }
+            const resultadoUnitario = (numero * 2.5) * (1 - 0.38);
+            document.getElementById("resultadoUnitario").textContent = `Valor Unitário: R$ ${resultadoUnitario.toFixed(2)}`;
+
+            atualizarQuantidade();
+        }
+
+        function atualizarQuantidade() {
+            const quantidade = parseFloat(document.getElementById("quantidade").value);
+            const resultadoText = document.getElementById("resultadoUnitario").textContent;
+            const resultadoValor = parseFloat(resultadoText.replace("Valor Unitário: R$ ", ""));
+            
+            if (!isNaN(quantidade) && !isNaN(resultadoValor)) {
+                const resultadoCaixaFechada = resultadoValor * quantidade;
+                document.getElementById("resultadoCaixaFechada").textContent = `Valor da Caixa Fechada: R$ ${resultadoCaixaFechada.toFixed(2)}`;
+            } else {
+                document.getElementById("resultadoCaixaFechada").textContent = "";
+            }
+        }
+
+        function copyCode(elementId) {
+            const codeToCopy = document.getElementById(elementId).textContent;
+            const tempTextarea = document.createElement("textarea");
+            tempTextarea.value = codeToCopy;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextarea);
+
+            const copyButton = document.querySelector(`button[onclick="copyCode('${elementId}')"]`);
+            copyButton.textContent = "Copiado!";
+            copyButton.classList.add("clicked");
+
+            setTimeout(() => {
+                copyButton.textContent = elementId.includes("Unitario") ? "Copiar Valor Unitário" : "Copiar Valor da Caixa";
+                copyButton.classList.remove("clicked");
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
